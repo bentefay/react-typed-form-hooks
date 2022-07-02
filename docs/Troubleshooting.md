@@ -6,7 +6,7 @@ nav_order: 100
 
 # Troubleshooting
 
-If you don't find your solution here, you can [open an issue](https://github.com/CodeStix/typed-react-form/issues/new)
+If you don't find your solution here, you can [open an issue](https://github.com/bentefay/typed-react-form/issues/new)
 
 ---
 

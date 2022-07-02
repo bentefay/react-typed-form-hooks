@@ -28,7 +28,7 @@ The goals of the library include:
     Fields can be complex objects and will not be modified by the library. 
 - **Performant** - Child form elements only re-render if necessary (including for arrays). 
     Provides hooks and components to listen for changes to specific parts of the form to trigger re-rendering if required.
-- **Simple**: An intuitive and easy to understand API. 
+- **Simple**: An intuitive API with a small surface area. 
 - **Small**: [![NPM Size](https://img.shields.io/bundlephobia/minzip/react-typed-form-hooks)](https://bundlephobia.com/result?p=react-typed-form-hooks)
 
 There are lots of great form libraries out there like 
@@ -42,6 +42,10 @@ There are lots of great form libraries out there like
 
 ```  
 npm install react-typed-form-hooks
+```
+
+```  
+yarn add react-typed-form-hooks
 ```
 
 ## Contributing

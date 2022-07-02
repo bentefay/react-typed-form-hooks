@@ -1,6 +1,8 @@
 export type ListenerCallback = () => void;
 export type ListenerMap = { [T in string]?: ListenerCallback };
-export type Validator<T, Error> = (values: T) => ErrorType<T, Error> | undefined | Promise<ErrorType<T, Error> | undefined>;
+export type Validator<T, Error> = (
+    values: T
+) => ErrorType<T, Error> | undefined | Promise<ErrorType<T, Error> | undefined>;
 
 export type ChildFormMap<T extends object, State, Error extends string> = {
     [K in KeysOfType<T, object>]?: ChildFormState<T, K, State, Error>;
@@ -30,8 +32,14 @@ function memberCopy<T>(value: T): T {
     } else if (typeof value === "object") {
         return { ...value };
     } else {
-        throw new Error(`Can only memberCopy() arrays and objects, got '${String(value)}'. Probably due to invalid useForm() value.`);
+        throw new Error(
+            `Can only memberCopy() arrays and objects, got '${String(value)}'. Probably due to invalid useForm() value.`
+        );
     }
+}
+
+function objectValues<T>(entries: T): T[keyof T][] {
+    return Object.values(entries) as any;
 }
 
 function addDistinct<T extends any[]>(arr1: T, arr2: T) {
@@ -41,6 +49,12 @@ function addDistinct<T extends any[]>(arr1: T, arr2: T) {
 }
 
 export class FormState<T extends object, State = DefaultState, Error extends string = DefaultError> {
+    private _state: State;
+    private listeners: { [Key in keyof T]?: ListenerMap } = {};
+    private anyListeners: ListenerMap = {};
+    private counter = 0;
+    private static formCounter = 0;
+
     /**
      * The id of this form, for debugging purposes.
      */
@@ -86,12 +100,6 @@ export class FormState<T extends object, State = DefaultState, Error extends str
      */
     public readonly errorMap: ErrorMap<T, Error> = {};
 
-    private _state: State;
-    private listeners: { [Key in keyof T]?: ListenerMap } = {};
-    private anyListeners: ListenerMap = {};
-    private counter = 0;
-    private static formCounter = 0;
-
     public constructor(
         values: T,
         defaultValues: T,
@@ -119,14 +127,14 @@ export class FormState<T extends object, State = DefaultState, Error extends str
      * Is this form modified?
      */
     public get dirty() {
-        return Object.keys(this.dirtyMap).some((e) => this.dirtyMap[e]);
+        return objectValues(this.dirtyMap).some(dirty => dirty);
     }
 
     /**
      * Does this form contain any error?
      */
     public get error() {
-        return Object.keys(this.errorMap).some((e) => this.errorMap[e]);
+        return objectValues(this.errorMap).some(dirty => dirty);
     }
 
     /**
@@ -148,7 +156,7 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         notifyParent: boolean = true,
         fireAny: boolean = true
     ) {
-        let valueMap = isDefault ? this.defaultValues : this.values;
+        const valueMap = isDefault ? this.defaultValues : this.values;
         if (value === undefined) {
             if (Array.isArray(valueMap)) {
                 // Deleting a key in an array doesn't work, splice instead
@@ -163,7 +171,7 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         this.dirtyMap[key] = dirty;
 
         if (notifyChild) {
-            let child = this.childMap[key as any];
+            const child = this.childMap[key as any as KeysOfType<T, object>];
             if (child) {
                 child.setValues(value, validate, isDefault, true, false);
                 this.dirtyMap[key] = child.dirty;
@@ -171,7 +179,7 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         }
 
         this.fireListeners(key);
-        if (fireAny) this.fireAnyListeners(); // Will be false when using setValues, he will call fireAnyListeners and notifyParentValues itself
+        if (fireAny) this.fireAnyListeners(); // Will be false when using setValues. Will call fireAnyListeners and notifyParentValues itself.
 
         if (notifyParent && this instanceof ChildFormState) {
             this.parent.setValueInternal(
@@ -315,7 +323,9 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         if (!this.validator) return true;
         let r = this.validator(this.values);
         if (r instanceof Promise)
-            throw new Error("validateSync() was called on a form with an asynchronous validator set, please use `await form.validate()` instead.");
+            throw new Error(
+                "validateSync() was called on a form with an asynchronous validator set, please use `await form.validate()` instead."
+            );
         this.setErrors(r ?? ({} as ErrorType<T, Error>));
         return !this.error;
     }
@@ -340,8 +350,9 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         if (!error) delete this.errorMap[key];
         else this.errorMap[key] = error;
 
-        if (notifyChild && this.childMap[key as any]) {
-            let changed = this.childMap[(key as unknown) as KeysOfType<T, object>]!.setErrors(error ?? ({} as any), true, false);
+        const child = this.childMap[key as any as KeysOfType<T, object>];
+        if (notifyChild && child) {
+            let changed = child.setErrors(error ?? ({} as any), true, false);
             if (!changed && error !== undefined) return false;
         }
 
@@ -425,9 +436,16 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         this._state = newState;
 
         let c = Object.keys(this.values) as (keyof T)[];
-        if (notifyChild) c.forEach((e) => (this.childMap[e as any] as ChildFormState<T, any, State, Error>)?.setState(newState, true, false));
+        if (notifyChild)
+            c.forEach(e =>
+                (this.childMap[e as any as KeysOfType<T, object>] as ChildFormState<T, any, State, Error>)?.setState(
+                    newState,
+                    true,
+                    false
+                )
+            );
 
-        c.forEach((e) => this.fireListeners(e));
+        c.forEach(e => this.fireListeners(e));
         this.fireAnyListeners();
 
         if (notifyParent && this instanceof ChildFormState) {
@@ -439,14 +457,16 @@ export class FormState<T extends object, State = DefaultState, Error extends str
      * Creates a submit handler to pass to your `<form onSubmit={...}>`. The function executes the passed handler only if the form validates correctly.
      * @param handler The handler to execute when this form contains no errors.
      */
-    public handleSubmit(handler: (form: FormState<T, State, Error>, ev: React.FormEvent<HTMLFormElement>) => void | Promise<void>) {
+    public handleSubmit(
+        handler: (form: FormState<T, State, Error>, ev: React.FormEvent<HTMLFormElement>) => void | Promise<void>
+    ) {
         async function handle(this: FormState<T, State, Error>, ev: React.FormEvent<HTMLFormElement>) {
             ev.preventDefault();
 
             // Show helpful warning when using buttons to submit
             if (process.env.NODE_ENV === "development") {
                 let buttons = Array.from((ev.target as HTMLFormElement).querySelectorAll("button"));
-                let noTypeButton = buttons.find((e) => !("type" in e.attributes));
+                let noTypeButton = buttons.find(e => !("type" in e.attributes));
                 if (noTypeButton) {
                     console.error(
                         `The submitted form contains a button without a type attribute. Please populate every button in your form with either type="button" or type="submit".`,
@@ -519,21 +539,22 @@ export class FormState<T extends object, State = DefaultState, Error extends str
         let a = this.listeners[key];
         if (a) {
             let l = Object.keys(a!);
-            l.forEach((e) => a![e]!());
+            l.forEach(e => a![e]!());
         }
     }
 
     protected fireAnyListeners() {
         let al = Object.keys(this.anyListeners);
-        al.forEach((e) => this.anyListeners[e]!());
+        al.forEach(e => this.anyListeners[e]!());
     }
 }
 
-export class ChildFormState<T extends FieldsOfType<any, object>, K extends KeysOfType<T, object>, State, Error extends string> extends FormState<
-    NonNullable<T[K]>,
+export class ChildFormState<
+    T extends FieldsOfType<any, object>,
+    K extends KeysOfType<T, object>,
     State,
-    Error
-> {
+    Error extends string
+> extends FormState<NonNullable<T[K]>, State, Error> {
     public name: K;
     public readonly parent: FormState<T, State, Error>;
 

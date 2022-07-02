@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "module": "esnext",
-    "target": "es6",
+    "target": "esnext",
     "lib": [
       "dom",
       "esnext",
@@ -17,6 +17,7 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

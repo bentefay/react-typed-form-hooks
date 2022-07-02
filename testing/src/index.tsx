@@ -1,10 +1,10 @@
 import "./index.css";
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import OneOfObjectForm from "./OneOfObjectForm";
 import OneOfObjectArrayForm from "./OneOfObjectArrayForm";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ExampleForm } from "./ExampleForm";
 import { CustomInputsForm } from "./CustomInput";
 import { FieldForm } from "./Fieldform";
@@ -12,15 +12,17 @@ import { FieldForm } from "./Fieldform";
 function Router() {
     return (
         <BrowserRouter>
-            <Switch>
-                <Route path="/object-types" component={OneOfObjectForm} />
-                <Route path="/object-types-array" component={OneOfObjectArrayForm} />
-                <Route path="/custom-inputs" component={CustomInputsForm} />
-                <Route path="/field" component={FieldForm} />
-                <Route path="/" component={ExampleForm} />
-            </Switch>
+            <Routes>
+                <Route path="/object-types" element={<OneOfObjectForm />} />
+                <Route path="/object-types-array" element={<OneOfObjectArrayForm />} />
+                <Route path="/custom-inputs" element={<CustomInputsForm />} />
+                <Route path="/field" element={<FieldForm />} />
+                <Route path="/" element={<ExampleForm />} />
+            </Routes>
         </BrowserRouter>
     );
 }
 
-ReactDOM.render(<Router />, document.getElementById("root"));
+const root = createRoot(document.getElementById("root")!);
+
+root.render(<Router />);

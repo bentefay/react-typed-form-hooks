@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Field, useForm } from "typed-react-form";
+import { Field, useForm } from "react-typed-form-hooks";
 
 export function TestForm() {
     const [counter, setCounter] = useState(0);

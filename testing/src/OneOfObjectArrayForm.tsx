@@ -1,5 +1,13 @@
 import React from "react";
-import { AnyListener, ArrayField, Field, FormState, useObjectField, useForm, useListener } from "typed-react-form";
+import {
+    AnyListener,
+    ArrayField,
+    Field,
+    FormState,
+    useObjectField,
+    useForm,
+    useListener
+} from "react-typed-form-hooks";
 
 interface Apple {
     type: "apple";
@@ -28,18 +36,19 @@ export default function OneOfObjectArrayForm() {
         <form
             style={{ margin: "0.5em" }}
             onReset={() => form.resetAll()}
-            onSubmit={async (ev) => {
+            onSubmit={async ev => {
                 // Prevent the submit button from reloading the page
                 ev.preventDefault();
                 // Disable inputs and fake submit...
                 form.setState({ isSubmitting: true });
-                await new Promise((res) => setTimeout(res, 500));
+                await new Promise(res => setTimeout(res, 500));
                 form.setState({ isSubmitting: false });
                 console.log(form.values);
                 form.setValues(form.values);
-            }}
-        >
-            <a href="https://github.com/CodeStix/typed-react-form/blob/master/example/src/OneOfObjectArrayForm.tsx">View source code</a>
+            }}>
+            <a href="https://github.com/CodeStix/typed-react-form/blob/master/example/src/OneOfObjectArrayForm.tsx">
+                View source code
+            </a>
             <ArrayField
                 form={form}
                 name="objects"
@@ -91,17 +100,20 @@ function BreadOrAppleForm(props: { parent: FormState<FormDataObject[]>; index: n
             <label>Object type: </label>
             <select
                 value={type}
-                onChange={(ev) => {
+                onChange={ev => {
                     if (ev.target.value === "apple") form.setValues({ type: "apple", color: "red" });
                     else if (ev.target.value === "bread") form.setValues({ type: "bread", size: 200 });
-                }}
-            >
+                }}>
                 <option value="apple">Apple</option>
                 <option value="bread">Bread</option>
             </select>
 
             {/* Render AppleForm when the type is 'apple'. When type is 'bread', render BreadForm */}
-            {type === "apple" ? <AppleForm form={form as FormState<Apple>} /> : <BreadForm form={form as FormState<Bread>} />}
+            {type === "apple" ? (
+                <AppleForm form={form as FormState<Apple>} />
+            ) : (
+                <BreadForm form={form as FormState<Bread>} />
+            )}
 
             {/* Remove this item from the list */}
             <button type="button" onClick={() => props.remove()}>

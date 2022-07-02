@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useForm, Field, AnyListener, ObjectField } from "typed-react-form";
+import { useForm, Field, AnyListener } from "react-typed-form-hooks";
 
 const inputStyle: React.CSSProperties = {
     color: "gray",
@@ -8,7 +8,7 @@ const inputStyle: React.CSSProperties = {
 
 // value and onChange are handled by the Field component
 function CustomInput(props: { value: string; onChange: (val: string) => void; myCustomProp?: boolean }) {
-    return <input style={inputStyle} value={props.value} onChange={(ev) => props.onChange(ev.target.value)} />;
+    return <input style={inputStyle} value={props.value} onChange={ev => props.onChange(ev.target.value)} />;
 }
 
 export function FieldForm() {
@@ -28,8 +28,7 @@ export function FieldForm() {
                 type="button"
                 onClick={() => {
                     form.setValues({ firstName: "test", lastName: "test2" }, false, true);
-                }}
-            >
+                }}>
                 Set values
             </button>
             <AnyListener form={form} render={({ dirty }) => <pre>{String(dirty)}</pre>} />
@@ -37,8 +36,7 @@ export function FieldForm() {
                 type="button"
                 onClick={() => {
                     inputRef.current!.style.color = Math.random() > 0.5 ? "red" : "blue";
-                }}
-            >
+                }}>
                 Test
             </button>
         </form>

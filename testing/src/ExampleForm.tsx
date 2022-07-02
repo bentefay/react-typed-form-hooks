@@ -1,4 +1,4 @@
-import { AnyListener, ArrayField, ObjectField, ErrorMap, Field, useForm } from "typed-react-form";
+import { AnyListener, ArrayField, ObjectField, ErrorMap, Field, useForm } from "react-typed-form-hooks";
 import tv, { SchemaType } from "typed-object-validator";
 import React from "react";
 import { VisualRender } from "./VisualRender";
@@ -60,8 +60,14 @@ export function ExampleForm() {
     return (
         <form
             onSubmit={form.handleSubmit(submit)}
-            style={{ display: "grid", gridTemplateColumns: "125px 300px 1fr", width: "300px", margin: "2em", gap: "1em 2em", alignItems: "center" }}
-        >
+            style={{
+                display: "grid",
+                gridTemplateColumns: "125px 300px 1fr",
+                width: "300px",
+                margin: "2em",
+                gap: "1em 2em",
+                alignItems: "center"
+            }}>
             {/* Show JSON representation */}
             <AnyListener
                 form={form}
@@ -79,7 +85,12 @@ export function ExampleForm() {
 
             {/* A simple text input */}
             <label>Deserializer text</label>
-            <Field form={form} name="customText" serializer={(e) => e?.toLowerCase()} deserializer={(e) => (e as string).toUpperCase()} />
+            <Field
+                form={form}
+                name="customText"
+                serializer={e => e?.toLowerCase()}
+                deserializer={e => (e as string).toUpperCase()}
+            />
             <pre>{`<Field form={form} name="fieldName" />`}</pre>
 
             {/* A textarea */}
@@ -177,7 +188,7 @@ export function ExampleForm() {
                 <ObjectField
                     form={form}
                     name="object"
-                    render={(form) => (
+                    render={form => (
                         <div style={{ background: "#0001" }}>
                             <p>Text</p>
                             <Field form={form} name="childText" />
@@ -203,7 +214,13 @@ export function ExampleForm() {
 
             {/* Set object field to undefined on uncheck */}
             <label>Toggle object</label>
-            <Field form={form} type="checkbox" name="object" setUndefinedOnUncheck value={{ childNumber: 0, childText: "" }} />
+            <Field
+                form={form}
+                type="checkbox"
+                name="object"
+                setUndefinedOnUncheck
+                value={{ childNumber: 0, childText: "" }}
+            />
             <pre>
                 {`
 <Field 
@@ -300,7 +317,7 @@ export function ExampleForm() {
                             <ObjectField
                                 form={form}
                                 name={i}
-                                render={(form) => (
+                                render={form => (
                                     <div>
                                         <Field form={form} name="text" />
                                         <Field form={form} name="boolean" type="checkbox" />
@@ -345,7 +362,7 @@ export function ExampleForm() {
                             <ObjectField
                                 form={form}
                                 name={i}
-                                render={(form) => (
+                                render={form => (
                                     <div>
                                         <Field form={form} name="text" />
                                         <Field form={form} name="boolean" type="checkbox" />

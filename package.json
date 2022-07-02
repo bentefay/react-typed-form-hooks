@@ -1,11 +1,11 @@
 {
-  "name": "typed-react-form",
+  "name": "react-typed-form-hooks",
   "version": "2.2.3",
   "description": "A completely type-checked React form builder.",
-  "author": "codestix",
+  "author": "Ben Tefay",
   "license": "MIT",
-  "repository": "CodeStix/typed-react-form",
-  "homepage": "https://codestix.github.io/typed-react-form/",
+  "repository": "bentefay/react-typed-form-hooks",
+  "homepage": "https://github.com/bentefay/react-typed-form-hooks",
   "main": "dist/index.js",
   "source": "src/index.ts",
   "keywords": [
@@ -27,27 +27,23 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "react": "^16.0.0 || ^17"
+    "react": ">=16"
   },
   "devDependencies": {
-    "@types/node": "^12.12.38",
-    "@types/react": "^16.9.27",
-    "@types/react-dom": "^16.9.7",
-    "cross-env": "^7.0.2",
-    "gh-pages": "^2.2.0",
-    "microbundle-crl": "^0.13.11",
-    "prettier": "^2.0.4",
-    "react": "17.0.0",
-    "react-dom": "17.0.0",
-    "react-scripts": "^3.4.1",
-    "typescript": "^4.2.3"
+    "@types/node": "16.11.42",
+    "@types/react": "18.0.14",
+    "@types/react-dom": "18.0.5",
+    "cross-env": "7.0.3",
+    "gh-pages": "4.0.0",
+    "microbundle": "0.15.0",
+    "prettier": "2.7.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "4.7.4"
   },
   "files": [
     "dist"
   ],
-  "resolutions": {
-    "**/typescript": "^4.1.5",
-    "**/@typescript-eslint/eslint-plugin": "^4.15.1",
-    "**/@typescript-eslint/parser": "^4.15.1"
-  }
+  "packageManager": "yarn@3.2.1"
 }
